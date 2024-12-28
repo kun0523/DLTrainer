@@ -17,8 +17,8 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QComboBox, QDoubleSpinBox, QGridLayout,
     QGroupBox, QHBoxLayout, QLabel, QLineEdit,
-    QMainWindow, QPushButton, QRadioButton, QSizePolicy,
-    QSpinBox, QStatusBar, QTabWidget, QTextEdit,
+    QMainWindow, QPlainTextEdit, QPushButton, QRadioButton,
+    QSizePolicy, QSpinBox, QStatusBar, QTabWidget,
     QVBoxLayout, QWidget)
 
 class Ui_MainWindow(object):
@@ -111,7 +111,7 @@ class Ui_MainWindow(object):
         self.groupBox_4.setAutoFillBackground(False)
         self.verticalLayout_11 = QVBoxLayout(self.groupBox_4)
         self.verticalLayout_11.setObjectName(u"verticalLayout_11")
-        self.verticalLayout_11.setContentsMargins(0, 8, 0, 4)
+        self.verticalLayout_11.setContentsMargins(0, 8, 0, 1)
         self.widget_12 = QWidget(self.groupBox_4)
         self.widget_12.setObjectName(u"widget_12")
         self.widget_12.setAutoFillBackground(True)
@@ -120,6 +120,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_5.setContentsMargins(10, 0, -1, 0)
         self.rb_clas_prj = QRadioButton(self.widget_12)
         self.rb_clas_prj.setObjectName(u"rb_clas_prj")
+        self.rb_clas_prj.setEnabled(False)
         self.rb_clas_prj.setChecked(False)
 
         self.verticalLayout_5.addWidget(self.rb_clas_prj)
@@ -520,10 +521,11 @@ class Ui_MainWindow(object):
         self.groupBox.setObjectName(u"groupBox")
         self.horizontalLayout = QHBoxLayout(self.groupBox)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
-        self.textEdit = QTextEdit(self.groupBox)
-        self.textEdit.setObjectName(u"textEdit")
+        self.pte_log_info = QPlainTextEdit(self.groupBox)
+        self.pte_log_info.setObjectName(u"pte_log_info")
+        self.pte_log_info.setReadOnly(True)
 
-        self.horizontalLayout.addWidget(self.textEdit)
+        self.horizontalLayout.addWidget(self.pte_log_info)
 
 
         self.verticalLayout.addWidget(self.groupBox)
@@ -535,7 +537,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.tabWidget_2.setCurrentIndex(2)
+        self.tabWidget_2.setCurrentIndex(1)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -560,10 +562,13 @@ class Ui_MainWindow(object):
         self.tabWidget_2.setTabText(self.tabWidget_2.indexOf(self.tab_3), QCoreApplication.translate("MainWindow", u"\u6570\u636e\u5904\u7406", None))
         self.groupBox_2.setTitle(QCoreApplication.translate("MainWindow", u"\u73af\u5883\u914d\u7f6e", None))
         self.label_12.setText(QCoreApplication.translate("MainWindow", u"\u914d\u7f6e\u6a21\u677f\u6587\u4ef6\uff1a", None))
+        self.le_temp_cfg_pth.setText(QCoreApplication.translate("MainWindow", u"D:\\share_dir\\DLTrainer\\default_configs\\ultral_config_template.yaml", None))
         self.le_temp_cfg_pth.setPlaceholderText(QCoreApplication.translate("MainWindow", u"config\u6a21\u677f\u6587\u4ef6\uff0c\u57fa\u4e8e\u6a21\u677f\u6587\u4ef6\u505a\u4fee\u6539", None))
+        self.le_train_tool_pth.setText(QCoreApplication.translate("MainWindow", u"D:\\envs\\ultral_py11_gpu\\Scripts\\yolo.exe", None))
         self.le_train_tool_pth.setPlaceholderText(QCoreApplication.translate("MainWindow", u"yolo.exe \u6587\u4ef6\u8def\u5f84", None))
-        self.label_11.setText(QCoreApplication.translate("MainWindow", u"\u9884\u8bad\u7ec3\u6a21\u578b\u6587\u4ef6\uff1a", None))
+        self.label_11.setText(QCoreApplication.translate("MainWindow", u"\u9884\u8bad\u7ec3\u6a21\u578b\u6587\u4ef6\u5939\uff1a", None))
         self.label_13.setText(QCoreApplication.translate("MainWindow", u"\u8bad\u7ec3\u5de5\u5177\u8def\u5f84\uff1a", None))
+        self.le_pretrained_dir.setText(QCoreApplication.translate("MainWindow", u"E:\\Pretrained_models\\YOLOv11", None))
         self.le_pretrained_dir.setPlaceholderText(QCoreApplication.translate("MainWindow", u"\u9884\u8bad\u7ec3\u6a21\u578b\u6587\u4ef6\u5939\u8def\u5f84\uff0c\u7528\u4e8e\u68c0\u7d22\u53ef\u4f7f\u7528\u7684\u6a21\u578b", None))
         self.btn_check_env.setText(QCoreApplication.translate("MainWindow", u"\u6267\u884c\u73af\u5883\u6d4b\u8bd5", None))
         self.groupBox_3.setTitle(QCoreApplication.translate("MainWindow", u"\u8d85\u53c2\u6570\u914d\u7f6e", None))
@@ -571,11 +576,14 @@ class Ui_MainWindow(object):
         self.label_5.setText(QCoreApplication.translate("MainWindow", u"\u9884\u8bad\u7ec3\u6a21\u578b\u6587\u4ef6\uff1a", None))
         self.label_17.setText(QCoreApplication.translate("MainWindow", u"\u56fe\u50cf\u5c3a\u5bf8\uff1a", None))
         self.label_7.setText(QCoreApplication.translate("MainWindow", u"\u6570\u636e\u96c6\u914d\u7f6e\u6587\u4ef6\uff1a", None))
+        self.le_imgsz.setText(QCoreApplication.translate("MainWindow", u"222", None))
         self.le_imgsz.setPlaceholderText(QCoreApplication.translate("MainWindow", u"\u9ed8\u8ba4:640 \u53ef\u6839\u636e\u9879\u76ee\u8c03\u6574\uff0c\u8981\u6c42\u76ee\u6807\u6e05\u6670\u53ef\u89c1", None))
         self.cb_pretrained_model_file.setPlaceholderText("")
         self.label_18.setText(QCoreApplication.translate("MainWindow", u"\u6279\u91cf\u4e2a\u6570\uff1a", None))
+        self.le_dataset_cfg_pth.setText("")
         self.le_dataset_cfg_pth.setPlaceholderText(QCoreApplication.translate("MainWindow", u"\u524d\u4e00\u6b65\u6570\u636e\u96c6\u5212\u5206\u540e\uff0c\u6240\u4ea7\u751f\u7684\u914d\u7f6e\u6587\u4ef6 yaml", None))
         self.label_16.setText(QCoreApplication.translate("MainWindow", u"\u5b66\u4e60\u7387\uff1a", None))
+        self.le_learning_rate.setText(QCoreApplication.translate("MainWindow", u"0.01", None))
         self.le_learning_rate.setPlaceholderText(QCoreApplication.translate("MainWindow", u"\u9ed8\u8ba4:0.01 \u89c2\u5bdf\u8bad\u7ec3\u8fc7\u7a0b\uff0c\u82e5\u6570\u636e\u6ce2\u52a8\u5927\uff0c\u5219\u9002\u5f53\u964d\u4f4e\u5b66\u4e60\u7387", None))
         self.btn_save_cfg.setText(QCoreApplication.translate("MainWindow", u"\u4fdd\u5b58\u914d\u7f6e\u6587\u4ef6", None))
         self.btn_open_cfg.setText(QCoreApplication.translate("MainWindow", u"\u76f4\u63a5\u7f16\u8f91\u914d\u7f6e\u6587\u4ef6", None))

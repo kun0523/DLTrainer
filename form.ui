@@ -485,7 +485,7 @@
            <number>0</number>
           </property>
           <property name="bottomMargin">
-           <number>4</number>
+           <number>1</number>
           </property>
           <item>
            <widget class="QWidget" name="widget_12" native="true">
@@ -504,6 +504,9 @@
              </property>
              <item>
               <widget class="QRadioButton" name="rb_clas_prj">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
                <property name="text">
                 <string>图像分类</string>
                </property>
@@ -547,7 +550,7 @@
           <bool>false</bool>
          </property>
          <property name="currentIndex">
-          <number>2</number>
+          <number>1</number>
          </property>
          <widget class="QWidget" name="tab_3">
           <attribute name="title">
@@ -680,6 +683,9 @@
                    </item>
                    <item row="3" column="2">
                     <widget class="QLineEdit" name="le_temp_cfg_pth">
+                     <property name="text">
+                      <string>D:\share_dir\DLTrainer\default_configs\ultral_config_template.yaml</string>
+                     </property>
                      <property name="placeholderText">
                       <string>config模板文件，基于模板文件做修改</string>
                      </property>
@@ -687,6 +693,9 @@
                    </item>
                    <item row="1" column="2">
                     <widget class="QLineEdit" name="le_train_tool_pth">
+                     <property name="text">
+                      <string>D:\envs\ultral_py11_gpu\Scripts\yolo.exe</string>
+                     </property>
                      <property name="placeholderText">
                       <string>yolo.exe 文件路径</string>
                      </property>
@@ -695,7 +704,7 @@
                    <item row="2" column="0">
                     <widget class="QLabel" name="label_11">
                      <property name="text">
-                      <string>预训练模型文件：</string>
+                      <string>预训练模型文件夹：</string>
                      </property>
                     </widget>
                    </item>
@@ -708,6 +717,9 @@
                    </item>
                    <item row="2" column="2">
                     <widget class="QLineEdit" name="le_pretrained_dir">
+                     <property name="text">
+                      <string>E:\Pretrained_models\YOLOv11</string>
+                     </property>
                      <property name="placeholderText">
                       <string>预训练模型文件夹路径，用于检索可使用的模型</string>
                      </property>
@@ -769,6 +781,9 @@
                    </item>
                    <item row="2" column="3">
                     <widget class="QLineEdit" name="le_imgsz">
+                     <property name="text">
+                      <string>222</string>
+                     </property>
                      <property name="placeholderText">
                       <string>默认:640 可根据项目调整，要求目标清晰可见</string>
                      </property>
@@ -790,6 +805,9 @@
                    </item>
                    <item row="1" column="1">
                     <widget class="QLineEdit" name="le_dataset_cfg_pth">
+                     <property name="text">
+                      <string/>
+                     </property>
                      <property name="placeholderText">
                       <string>前一步数据集划分后，所产生的配置文件 yaml</string>
                      </property>
@@ -827,6 +845,9 @@
                    </item>
                    <item row="1" column="3">
                     <widget class="QLineEdit" name="le_learning_rate">
+                     <property name="text">
+                      <string>0.01</string>
+                     </property>
                      <property name="placeholderText">
                       <string>默认:0.01 观察训练过程，若数据波动大，则适当降低学习率</string>
                      </property>
@@ -1037,7 +1058,11 @@
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
-        <widget class="QTextEdit" name="textEdit"/>
+        <widget class="QPlainTextEdit" name="pte_log_info">
+         <property name="readOnly">
+          <bool>true</bool>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>

@@ -4,11 +4,7 @@ from PySide6.QtCore import QObject, Signal, Slot, QThread, QProcess
 from PySide6.QtWidgets import QPushButton
 
 from DataSetPy.dataset import UltrDetDataSet
-from ModelPy.model import YoloModel
-
-
-class MySignals(QObject):
-    m_label_finished_signal = Signal(QPushButton)
+from ModelPy.model import YoloModel, MySignals
 
 
 class DataSetControl(QThread):
@@ -56,11 +52,6 @@ class ModelControl(QThread):
         self.model = YoloModel(self.train_tool_path, self.pretrained_model_path, self.template_cfg_path, self.work_dir)
         return
 
-    def doTaskByProcess(self, command:str):
-        process = QProcess()
-        process.start(command)
-        return
-
 
 class ModelCheckControl(ModelControl):
     def __init__(self, train_tool_path, pretrained_model_path, template_cfg_path):
@@ -80,6 +71,11 @@ class ModelTrainControl(ModelControl):
 
     def run(self):
         self.model.train(self.train_cfg_path)
+        # self.run_task_by_process(command)
+        return
+
+    def shutdown(self):
+        self.model.shutdown()
         return
 
 
@@ -93,9 +89,14 @@ class ModelShowTrainInfoControl(ModelControl):
         self.model.show_training_curve(self.server_port)
         return
 
+    def shutdown(self):
+        self.model.shutdown()
+        return
+
 
 class ModelEvaluateControl(ModelControl):
-    def __init__(self, train_tool_path, pretrained_model_path, template_cfg_path, used_ptmodel_path: str, dataset_cfg_path:str):
+    def __init__(self, train_tool_path, pretrained_model_path, template_cfg_path, used_ptmodel_path: str,
+                 dataset_cfg_path: str):
         super().__init__(train_tool_path, pretrained_model_path, template_cfg_path)
         self.used_ptmodel_path = used_ptmodel_path
         self.dataset_cfg_path = dataset_cfg_path
@@ -117,6 +118,7 @@ class ModelInferenceControl(ModelControl):
     def run(self):
         self.model.inference(self.used_ptmodel_path, self.test_image_path)
         return
+
 
 class ModelExportControl(ModelControl):
     def __init__(self, train_tool_path, pretrained_model_path, template_cfg_path, used_ptmodel_path: str):

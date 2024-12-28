@@ -8,9 +8,14 @@ from abc import ABC, abstractmethod
 import subprocess
 from datetime import datetime
 
-from PySide6.QtCore import QProcess
+from PySide6.QtCore import Signal, QObject
 
 from utils.utils import get_timestamp
+
+
+class MySignals(QObject):
+    my_btn_clicked_signal = Signal(str, str)
+    send_message_signal = Signal(str)
 
 
 # 向界面开放的接口
@@ -62,6 +67,8 @@ class YoloModel(Model):
         self.config_dict = {}
         self.curr_proj_dir = None
         self.use_config_pth = None
+        self.process = None
+        self.my_process_signal = MySignals()
         return
 
     def make_train_cfg(self,
@@ -72,7 +79,6 @@ class YoloModel(Model):
                        batch: int,
                        imgsz: int,
                        learning_rate: float,
-                       device: str,  # cuda cpu
                        ):
         with open(self.template_cfg_pth, "r") as fp:
             cfg = yaml.safe_load(fp)
@@ -86,7 +92,7 @@ class YoloModel(Model):
         self.config_dict["batch"] = batch
         self.config_dict["imgsz"] = imgsz
         self.config_dict["lr0"] = learning_rate
-        self.config_dict["device"] = device
+        self.config_dict["device"] = None
 
         timestamp = get_timestamp()
         self.curr_proj_dir = os.path.join(self.work_dir, f"Proj_{timestamp}")
@@ -100,25 +106,29 @@ class YoloModel(Model):
             yaml.safe_dump(self.config_dict, fp)
         return tmp_config_pth
 
-    @staticmethod
-    def __run_cmd(command_):
-        process = subprocess.Popen(command_, shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        while process.poll() is None:
-            line = process.stdout.readline()
+    def __run_cmd(self, command_):
+        self.process = subprocess.Popen(command_, shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        while self.process.poll() is None:
+            line = self.process.stdout.readline()
             if type(line) == bytes:
                 line = line.decode()
             line = line.strip()
             if line:
-                print(line)
-        if process.returncode == 0:
+                self.my_process_signal.send_message_signal.emit(line)
+        if self.process.returncode == 0:
             print("success")
         else:
             print("failed")
         return
 
+    def shutdown(self):
+        if self.process is not None:
+            self.process.kill()
+        return
+
     def __copy_base_model(self, pretrained_model_file_name):
         src_pth = os.path.join(self.pretrained_model_dir, "yolo11n.pt")
-        dst_pth = os.path.join(self.work_dir, "yolo11n.pt")
+        dst_pth = os.path.join("./", "yolo11n.pt")
         shutil.copy2(src_pth, dst_pth)
         return
 
@@ -129,12 +139,11 @@ class YoloModel(Model):
 
     def train(self, train_cfg_pth):
         # 每次训练对应一个config
-        # os.chdir(self.work_dir)
         self.__copy_base_model("yolo11n.pt")
         # 复制一个 基础模型文件在工作目录下
         command = f"{self.tool_pth} cfg={train_cfg_pth}"
         self.__run_cmd(command)
-        return
+        return command
 
     def evaluate(self,
                  dataset_config_pth: str,  # 数据集配置文件
@@ -147,7 +156,7 @@ class YoloModel(Model):
 
         command = f"{self.tool_pth} val project={self.curr_proj_dir} model={model_pth} data={dataset_config_pth}"
         self.__run_cmd(command)
-        return
+        return command
 
     def inference(self,
                   model_pth: str,
@@ -158,8 +167,8 @@ class YoloModel(Model):
             self.curr_proj_dir = os.path.split(model_pth)[0]
 
         command = f"{self.tool_pth} predict project={self.curr_proj_dir} model={model_pth} source={test_image_pth}"
-        self.__run_cmd(command)
-        return
+        self.__run_cmd(command)  # 自己发起进程
+        return command  # 交给调用方发起进程
 
     def export(self,
                model_pth,
@@ -177,10 +186,9 @@ class YoloModel(Model):
     def show_training_curve(self, port: int):
         tensorboard_pth = self.tool_pth.replace("yolo.exe", "tensorboard.exe")
         assert os.path.isfile(tensorboard_pth), "Error, Tensorboard is Not Found!!"
-        print(">>>>>>>>>>>>>>>>>", self.work_dir, ">>>>>>>>>>>>>")
         command = f"{tensorboard_pth} --logdir={self.work_dir} --port={port}"
         self.__run_cmd(command)
-        return
+        return command
 
 
 class PaddleModel:
