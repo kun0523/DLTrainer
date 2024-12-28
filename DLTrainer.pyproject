@@ -1,0 +1,11 @@
+{
+    "files": [
+        "mainwindow.py",
+        "form.ui",
+        "DataSetPy/dataset.py",
+        "ModelPy/model.py",
+        "utils/utils.py",
+        "Controls.py",
+        "default_configs/ultral_config_template.yaml"
+    ]
+}
