@@ -517,7 +517,7 @@
                 <bool>true</bool>
                </property>
                <property name="checked">
-                <bool>false</bool>
+                <bool>true</bool>
                </property>
               </widget>
              </item>
@@ -527,7 +527,7 @@
                 <string>目标检测</string>
                </property>
                <property name="checked">
-                <bool>true</bool>
+                <bool>false</bool>
                </property>
               </widget>
              </item>
@@ -779,7 +779,7 @@
                     </widget>
                    </item>
                    <item row="1" column="0">
-                    <widget class="QLabel" name="label_7">
+                    <widget class="QLabel" name="lb_dataset">
                      <property name="text">
                       <string>数据集配置文件：</string>
                      </property>
@@ -788,10 +788,10 @@
                    <item row="2" column="3">
                     <widget class="QLineEdit" name="le_imgsz">
                      <property name="text">
-                      <string>640</string>
+                      <string/>
                      </property>
                      <property name="placeholderText">
-                      <string>默认:640 可根据项目调整，要求目标清晰可见</string>
+                      <string>默认:224 可根据项目调整，要求目标清晰可见</string>
                      </property>
                     </widget>
                    </item>

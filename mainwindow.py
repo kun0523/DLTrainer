@@ -4,8 +4,8 @@ import sys
 import os
 
 from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QMessageBox
-from PySide6.QtCore import Signal, Slot, QTimer
-from PySide6.QtGui import QIcon
+from PySide6.QtCore import QTimer
+from PySide6.QtGui import QIcon, QColor, QPalette
 
 # Important:
 # You need to run the following command to generate the ui_form.py file
@@ -13,8 +13,9 @@ from PySide6.QtGui import QIcon
 #     pyside2-uic form.ui -o ui_form.py
 from ui_form import Ui_MainWindow
 from ModelPy.model import YoloModel
-from Controls import MySignals, DataLabelControl, DataSplitControl, ModelTrainControl, ModelEvaluateControl, \
-    ModelInferenceControl, ModelCheckControl, ModelShowTrainInfoControl, ModelExportControl
+from Controls import MySignals, ModelTrainControl, ModelEvaluateControl, \
+    ModelInferenceControl, ModelCheckControl, ModelShowTrainInfoControl, ModelExportControl, \
+    ClasDataLabelControl, ClasDataSplitControl, DetDataLabelControl, DetDataSplitControl
 
 from utils.utils import get_timenow
 
@@ -26,6 +27,10 @@ class MainWindow(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
+        self.DataLabelControl = None
+        self.DataSplitControl = None
+        self.check_task_type()
+
         # 判断任务类型
         self.ui.rb_clas_prj.clicked.connect(self.check_task_type)
         self.ui.rb_det_prj.clicked.connect(self.check_task_type)
@@ -36,9 +41,6 @@ class MainWindow(QMainWindow):
         self.status_label.setStyleSheet("background-color: darkseagreen; color: white;")
         self.status_label.setMargin(5)
         self.ui.statusbar.addWidget(self.status_label)
-        # TODO 待加信号关联
-        # self.status_label.setText("  运行中,请稍后...  ")
-        # self.status_label.setStyleSheet("background-color: yellow; color: red;")
 
         # 标识软件版本
         version_label = QLabel("Version 0.8")
@@ -98,11 +100,25 @@ class MainWindow(QMainWindow):
         global TASK_TYPE
         if self.ui.rb_clas_prj.isChecked():
             TASK_TYPE = 0
+            self.DataLabelControl = ClasDataLabelControl
+            self.DataSplitControl = ClasDataSplitControl
+            self.ui.lb_dataset.setText("数据集路径:")
+            self.ui.le_labelme_pth.setDisabled(True)
+            self.write_system_log("INFO", "Use Classify Task Mode")
         elif self.ui.rb_det_prj.isChecked():
             TASK_TYPE = 1
+            self.DataLabelControl = DetDataLabelControl
+            self.DataSplitControl = DetDataSplitControl
+            self.ui.le_labelme_pth.setDisabled(False)
+            self.ui.lb_dataset.setText("数据集配置文件:")
+            self.write_system_log("INFO", "Use Detection Task Mode")
         elif self.ui.rb_seg_prj.isChecked():
             TASK_TYPE = 2
+            self.ui.tabWidget_2.setPalette(QPalette(QColor(0,0,255)))
+            self.ui.le_labelme_pth.setDisabled(False)
+            self.write_system_log("INFO", "Use Segmentation Task Mode")
         else:
+            self.write_system_log("Error", "Use Wrong Task Mode")
             raise RuntimeError("Error, Wrong TASK TYPE")
 
     def write_system_log(self, level, content):
@@ -142,17 +158,18 @@ class MainWindow(QMainWindow):
 
         try:
             global worker
-            worker = DataLabelControl(tool_path, org_img_dir, obj_classes)
+            worker = self.DataLabelControl(tool_path, org_img_dir, obj_classes)
             worker.finished.connect(lambda: self.button_status_invert(self.ui.btn_label))
             worker.finished.connect(lambda: self.button_status_invert(self.ui.btn_split))
             worker.finished.connect(lambda: self.write_system_log("INFO", "DataSet Label Complete."))
             worker.start()
+
+            if worker.wait() and worker.exit_code==1:
+                raise worker.exception
+
         except Exception as ex:
             self.msg_box.setText(str(ex))
             self.msg_box.exec()
-
-            self.button_status_invert(self.ui.btn_label)
-            self.button_status_invert(self.ui.btn_split)
         return
 
     def on_btn_split_clicked(self):
@@ -171,17 +188,18 @@ class MainWindow(QMainWindow):
             assert train_data_percent > 0.0, f"Error, Set train precent:{train_data_percent} too small"
 
             global worker
-            worker = DataSplitControl(tool_path, org_img_dir, obj_classes, train_data_percent)
+            worker = self.DataSplitControl(tool_path, org_img_dir, obj_classes, train_data_percent)
             worker.finished.connect(lambda: self.button_status_invert(self.ui.btn_label))
             worker.finished.connect(lambda: self.button_status_invert(self.ui.btn_split))
             worker.finished.connect(lambda: self.write_system_log("INFO", "DataSet Split Complete."))
             worker.start()
+
+            if worker.wait() and worker.exit_code==1:
+                raise worker.exception
+
         except Exception as ex:
             self.msg_box.setText(str(ex))
             self.msg_box.exec()
-
-            self.button_status_invert(self.ui.btn_label)
-            self.button_status_invert(self.ui.btn_split)
         return
 
     def on_btn_check_env_clicked(self):
@@ -210,7 +228,6 @@ class MainWindow(QMainWindow):
             self.button_status_invert(self.ui.btn_check_env)
         return
 
-    # 在保存config时 创建工作目录 并保存在config文件中，后续过程依赖config中的路径进行保存
     def on_btn_save_cfg_clicked(self):
         self.my_signal.my_btn_clicked_signal.emit("INFO", "Save Train Config Info...")
 
@@ -226,14 +243,21 @@ class MainWindow(QMainWindow):
             batchsz = int(self.ui.sb_batch_size.text().strip())
 
             assert os.path.isfile(temp_cfg_path), f"Error, template config file:[{temp_cfg_path}] Not Found"
-            assert os.path.isfile(dataset_cfg_pth), f"Error, dataset config file:[{dataset_cfg_pth}] Not Found"
+            assert (os.path.isdir(dataset_cfg_pth) or os.path.isfile(dataset_cfg_pth)), f"Error, dataset: [{dataset_cfg_pth}] Not Found"
             used_pretrained_model_pth = os.path.join(pretrained_model_dir, pretrained_model_name)
             assert os.path.isfile(
                 used_pretrained_model_pth), f"Error, pretrained model file:[{used_pretrained_model_pth}] Not Found"
 
             model = YoloModel(tool_path, pretrained_model_dir, temp_cfg_path, self.workdir)
-            # TODO: 根据检查的结果自动选择设备  cuda or cpu  需要cpu的Torch库
-            self.train_config_pth = model.make_train_cfg("detect", dataset_cfg_pth, used_pretrained_model_pth, epochs,
+            if TASK_TYPE == 1:
+                task_mode = "classify"
+            elif TASK_TYPE == 2:
+                task_mode = "detect"
+            elif TASK_TYPE == 3:
+                task_mode = "segment"
+            else:
+                task_mode = ""
+            self.train_config_pth = model.make_train_cfg(task_mode, dataset_cfg_pth, used_pretrained_model_pth, epochs,
                                                          batchsz, imgsz, learning_rate)
             if os.path.isfile(self.train_config_pth):
                 self.my_signal.my_btn_clicked_signal.emit("INFO",
@@ -367,7 +391,6 @@ class MainWindow(QMainWindow):
 
 
 # Done： 完成整体流程  数据处理+模型训练+模型推理
-# TODO： pyside6-deploy GUI软件打包
 # TODO: 在不同电脑上做测试。。。
 # TODO: 当同时发生多个任务时，某一个任务进行完成就会把状态改成空闲。。待改正
 # TODO: 当一个任务进行过程中，切换到另一个任务怎么办？

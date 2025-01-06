@@ -114,8 +114,8 @@ class YoloModel(Model):
                 line = line.decode()
             line = line.strip()
             if line:
-                print(line)
-                # self.my_process_signal.send_message_signal.emit(line)
+                # print(line)
+                self.my_process_signal.send_message_signal.emit(line)
         if self.process.returncode == 0:
             print("success")
         else:
@@ -151,7 +151,8 @@ class YoloModel(Model):
                  model_pth: str,
                  ):
 
-        assert (os.path.isfile(dataset_config_pth) or os.path.isdir(dataset_config_pth)), "Error, Dataset config yaml Not Found!"
+        assert (os.path.isfile(dataset_config_pth) or os.path.isdir(
+            dataset_config_pth)), "Error, Dataset config yaml Not Found!"
         if self.curr_proj_dir is None:
             self.curr_proj_dir = os.path.split(model_pth)[0]
 
@@ -230,6 +231,7 @@ def run_ultra_clas_process():
 
     return
 
+
 def run_ultra_det_process():
     model = YoloModel(r"D:\envs\ultr_py11\Scripts\yolo.exe",
                       r"E:\Pretrained_models\YOLOv11",
@@ -258,16 +260,9 @@ def run_ultra_det_process():
     return
 
 
-
 if __name__ == "__main__":
     # TODO: 测试模型训练  导出  推理
 
     run_ultra_clas_process()
 
     # run_ultra_det_process()
-
-
-
-
-
-

@@ -3,7 +3,7 @@ import os
 from PySide6.QtCore import QObject, Signal, Slot, QThread, QProcess
 from PySide6.QtWidgets import QPushButton
 
-from DataSetPy.dataset import UltrDetDataSet
+from DataSetPy.dataset import UltrDetDataSet, UltrClasDataSet
 from ModelPy.model import YoloModel, MySignals
 
 
@@ -12,33 +12,77 @@ class DataSetControl(QThread):
         super().__init__()
         self.label_tool_path = label_tool_path
         self.org_image_dir = org_image_dir
-        self.label_txt_path = os.path.join(org_image_dir, "labels.txt")
+        self.split_save_dir = os.path.join(os.getcwd(), "WorkDir")
+        self.label_txt_path = os.path.join(self.split_save_dir, "labels.txt")
         with open(self.label_txt_path, "w", encoding="utf8") as fp:
             for clas in obj_classes:
                 fp.write(f"{clas.strip()}\n")
-        self.split_save_dir = os.path.join(os.getcwd(), "WorkDir")
+        self.dataset_obj = None
+
+        self.exit_code = 0
+        self.exception = None
+        return
+
+
+class ClasDataLabelControl(DataSetControl):
+    def __init__(self, label_tool_path, org_image_dir, obj_classes):
+        super().__init__(label_tool_path, org_image_dir, obj_classes)
+        self.dataset_obj = UltrClasDataSet(self.org_image_dir, self.split_save_dir, self.label_txt_path)
+        return
+
+    def run(self):
+        try:
+            self.dataset_obj.label_data()
+        except Exception as e:
+            self.exit_code = 1
+            self.exception = e
+        return
+
+
+class ClasDataSplitControl(DataSetControl):
+    def __init__(self, label_tool_path, org_image_dir, obj_classes, train_percent: float):
+        super().__init__(label_tool_path, org_image_dir, obj_classes)
+        self.dataset_obj = UltrClasDataSet(self.org_image_dir, self.split_save_dir, self.label_txt_path)
+        self.train_data_percent = train_percent
+
+    def run(self):
+        try:
+            self.dataset_obj.convert_and_split(self.train_data_percent)
+        except Exception as e:
+            self.exit_code = 1
+            self.exception = e
+        return
+
+
+class DetDataLabelControl(DataSetControl):
+    def __init__(self, label_tool_path, org_image_dir, obj_classes):
+        super().__init__(label_tool_path, org_image_dir, obj_classes)
         self.dataset_obj = UltrDetDataSet(self.org_image_dir, self.split_save_dir, self.label_txt_path,
                                           self.label_tool_path)
         return
 
-
-class DataLabelControl(DataSetControl):
-    def __init__(self, label_tool_path, org_image_dir, obj_classes):
-        super().__init__(label_tool_path, org_image_dir, obj_classes)
-        return
-
     def run(self):
-        self.dataset_obj.label_data()
+        try:
+            self.dataset_obj.label_data()
+        except Exception as e:
+            self.exit_code = 1
+            self.exception = e
         return
 
 
-class DataSplitControl(DataSetControl):
+class DetDataSplitControl(DataSetControl):
     def __init__(self, label_tool_path, org_image_dir, obj_classes, train_percent: float):
         super().__init__(label_tool_path, org_image_dir, obj_classes)
+        self.dataset_obj = UltrDetDataSet(self.org_image_dir, self.split_save_dir, self.label_txt_path,
+                                          self.label_tool_path)
         self.train_data_percent = train_percent
 
     def run(self):
-        self.dataset_obj.convert_and_split(self.train_data_percent)
+        try:
+            self.dataset_obj.convert_and_split(self.train_data_percent)
+        except Exception as e:
+            self.exit_code = 1
+            self.exception = e
         return
 
 

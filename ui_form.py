@@ -123,13 +123,13 @@ class Ui_MainWindow(object):
         self.rb_clas_prj.setObjectName(u"rb_clas_prj")
         self.rb_clas_prj.setEnabled(True)
         self.rb_clas_prj.setCheckable(True)
-        self.rb_clas_prj.setChecked(False)
+        self.rb_clas_prj.setChecked(True)
 
         self.verticalLayout_5.addWidget(self.rb_clas_prj)
 
         self.rb_det_prj = QRadioButton(self.widget_12)
         self.rb_det_prj.setObjectName(u"rb_det_prj")
-        self.rb_det_prj.setChecked(True)
+        self.rb_det_prj.setChecked(False)
 
         self.verticalLayout_5.addWidget(self.rb_det_prj)
 
@@ -309,10 +309,10 @@ class Ui_MainWindow(object):
 
         self.gridLayout_2.addWidget(self.label_17, 2, 2, 1, 1)
 
-        self.label_7 = QLabel(self.groupBox_3)
-        self.label_7.setObjectName(u"label_7")
+        self.lb_dataset = QLabel(self.groupBox_3)
+        self.lb_dataset.setObjectName(u"lb_dataset")
 
-        self.gridLayout_2.addWidget(self.label_7, 1, 0, 1, 1)
+        self.gridLayout_2.addWidget(self.lb_dataset, 1, 0, 1, 1)
 
         self.le_imgsz = QLineEdit(self.groupBox_3)
         self.le_imgsz.setObjectName(u"le_imgsz")
@@ -577,9 +577,9 @@ class Ui_MainWindow(object):
         self.label_6.setText(QCoreApplication.translate("MainWindow", u"\u8fed\u4ee3\u8f6e\u6b21\uff1a", None))
         self.label_5.setText(QCoreApplication.translate("MainWindow", u"\u9884\u8bad\u7ec3\u6a21\u578b\u6587\u4ef6\uff1a", None))
         self.label_17.setText(QCoreApplication.translate("MainWindow", u"\u56fe\u50cf\u5c3a\u5bf8\uff1a", None))
-        self.label_7.setText(QCoreApplication.translate("MainWindow", u"\u6570\u636e\u96c6\u914d\u7f6e\u6587\u4ef6\uff1a", None))
-        self.le_imgsz.setText(QCoreApplication.translate("MainWindow", u"640", None))
-        self.le_imgsz.setPlaceholderText(QCoreApplication.translate("MainWindow", u"\u9ed8\u8ba4:640 \u53ef\u6839\u636e\u9879\u76ee\u8c03\u6574\uff0c\u8981\u6c42\u76ee\u6807\u6e05\u6670\u53ef\u89c1", None))
+        self.lb_dataset.setText(QCoreApplication.translate("MainWindow", u"\u6570\u636e\u96c6\u914d\u7f6e\u6587\u4ef6\uff1a", None))
+        self.le_imgsz.setText("")
+        self.le_imgsz.setPlaceholderText(QCoreApplication.translate("MainWindow", u"\u9ed8\u8ba4:224 \u53ef\u6839\u636e\u9879\u76ee\u8c03\u6574\uff0c\u8981\u6c42\u76ee\u6807\u6e05\u6670\u53ef\u89c1", None))
         self.cb_pretrained_model_file.setPlaceholderText("")
         self.label_18.setText(QCoreApplication.translate("MainWindow", u"\u6279\u91cf\u4e2a\u6570\uff1a", None))
         self.le_dataset_cfg_pth.setText("")
