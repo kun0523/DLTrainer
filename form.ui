@@ -25,7 +25,7 @@
      <widget class="QWidget" name="widget_8" native="true">
       <layout class="QHBoxLayout" name="horizontalLayout_7">
        <item>
-        <widget class="QGroupBox" name="groupBox_4">
+        <widget class="QGroupBox" name="gb_task_type">
          <property name="palette">
           <palette>
            <active>
@@ -474,6 +474,9 @@
          <property name="title">
           <string>任务类型选择：</string>
          </property>
+         <property name="checkable">
+          <bool>false</bool>
+         </property>
          <layout class="QVBoxLayout" name="verticalLayout_11">
           <property name="leftMargin">
            <number>0</number>
@@ -505,10 +508,13 @@
              <item>
               <widget class="QRadioButton" name="rb_clas_prj">
                <property name="enabled">
-                <bool>false</bool>
+                <bool>true</bool>
                </property>
                <property name="text">
                 <string>图像分类</string>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
                </property>
                <property name="checked">
                 <bool>false</bool>
@@ -550,7 +556,7 @@
           <bool>false</bool>
          </property>
          <property name="currentIndex">
-          <number>1</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="tab_3">
           <attribute name="title">
@@ -684,7 +690,7 @@
                    <item row="3" column="2">
                     <widget class="QLineEdit" name="le_temp_cfg_pth">
                      <property name="text">
-                      <string>D:\share_dir\DLTrainer\default_configs\ultral_config_template.yaml</string>
+                      <string/>
                      </property>
                      <property name="placeholderText">
                       <string>config模板文件，基于模板文件做修改</string>
@@ -694,7 +700,7 @@
                    <item row="1" column="2">
                     <widget class="QLineEdit" name="le_train_tool_pth">
                      <property name="text">
-                      <string>D:\envs\ultral_py11_gpu\Scripts\yolo.exe</string>
+                      <string/>
                      </property>
                      <property name="placeholderText">
                       <string>yolo.exe 文件路径</string>
@@ -718,7 +724,7 @@
                    <item row="2" column="2">
                     <widget class="QLineEdit" name="le_pretrained_dir">
                      <property name="text">
-                      <string>E:\Pretrained_models\YOLOv11</string>
+                      <string/>
                      </property>
                      <property name="placeholderText">
                       <string>预训练模型文件夹路径，用于检索可使用的模型</string>
@@ -782,7 +788,7 @@
                    <item row="2" column="3">
                     <widget class="QLineEdit" name="le_imgsz">
                      <property name="text">
-                      <string>222</string>
+                      <string>640</string>
                      </property>
                      <property name="placeholderText">
                       <string>默认:640 可根据项目调整，要求目标清晰可见</string>

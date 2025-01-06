@@ -5,6 +5,7 @@ import os
 
 from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QMessageBox
 from PySide6.QtCore import Signal, Slot, QTimer
+from PySide6.QtGui import QIcon
 
 # Important:
 # You need to run the following command to generate the ui_form.py file
@@ -17,12 +18,18 @@ from Controls import MySignals, DataLabelControl, DataSplitControl, ModelTrainCo
 
 from utils.utils import get_timenow
 
+TASK_TYPE = 0 # 0 img_clas  1 obj_det  2 obj_seg
 
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+
+        # 判断任务类型
+        self.ui.rb_clas_prj.clicked.connect(self.check_task_type)
+        self.ui.rb_det_prj.clicked.connect(self.check_task_type)
+        self.ui.rb_seg_prj.clicked.connect(self.check_task_type)
 
         # 标识运行状态
         self.status_label = QLabel("~空闲~")
@@ -87,6 +94,17 @@ class MainWindow(QMainWindow):
         self.msg_box.setIcon(QMessageBox.Icon.Critical)
         return
 
+    def check_task_type(self):
+        global TASK_TYPE
+        if self.ui.rb_clas_prj.isChecked():
+            TASK_TYPE = 0
+        elif self.ui.rb_det_prj.isChecked():
+            TASK_TYPE = 1
+        elif self.ui.rb_seg_prj.isChecked():
+            TASK_TYPE = 2
+        else:
+            raise RuntimeError("Error, Wrong TASK TYPE")
+
     def write_system_log(self, level, content):
         self.ui.pte_log_info.appendPlainText(f"[{get_timenow()}] [{level}] {content}")
         return
@@ -127,6 +145,7 @@ class MainWindow(QMainWindow):
             worker = DataLabelControl(tool_path, org_img_dir, obj_classes)
             worker.finished.connect(lambda: self.button_status_invert(self.ui.btn_label))
             worker.finished.connect(lambda: self.button_status_invert(self.ui.btn_split))
+            worker.finished.connect(lambda: self.write_system_log("INFO", "DataSet Label Complete."))
             worker.start()
         except Exception as ex:
             self.msg_box.setText(str(ex))
@@ -155,6 +174,7 @@ class MainWindow(QMainWindow):
             worker = DataSplitControl(tool_path, org_img_dir, obj_classes, train_data_percent)
             worker.finished.connect(lambda: self.button_status_invert(self.ui.btn_label))
             worker.finished.connect(lambda: self.button_status_invert(self.ui.btn_split))
+            worker.finished.connect(lambda: self.write_system_log("INFO", "DataSet Split Complete."))
             worker.start()
         except Exception as ex:
             self.msg_box.setText(str(ex))
@@ -347,10 +367,13 @@ class MainWindow(QMainWindow):
 
 
 # Done： 完成整体流程  数据处理+模型训练+模型推理
-# TODO： pyinstaller GUI软件打包
+# TODO： pyside6-deploy GUI软件打包
 # TODO: 在不同电脑上做测试。。。
+# TODO: 当同时发生多个任务时，某一个任务进行完成就会把状态改成空闲。。待改正
+# TODO: 当一个任务进行过程中，切换到另一个任务怎么办？
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+    app.setWindowIcon(QIcon("icon.ico"))
     widget = MainWindow()
     widget.show()
     sys.exit(app.exec())

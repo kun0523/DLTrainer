@@ -1,7 +1,9 @@
 *.pyc
 *.pt
 *.txt
+*.xml
 
 .idea/
 __pycache__/
 WorkDir/
+DLTmp/

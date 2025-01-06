@@ -75,10 +75,10 @@ class YoloModel(Model):
                        mode: str,  # classify  detect  segment
                        dataset_config_pth: str,  # 数据集配置文件
                        pretrained_model_file_name: str,
-                       epochs: int,
-                       batch: int,
-                       imgsz: int,
-                       learning_rate: float,
+                       epochs: int = 100,
+                       batch: int = 8,
+                       imgsz: int = 224,
+                       learning_rate: float = 0.01,
                        ):
         with open(self.template_cfg_pth, "r") as fp:
             cfg = yaml.safe_load(fp)
@@ -114,7 +114,8 @@ class YoloModel(Model):
                 line = line.decode()
             line = line.strip()
             if line:
-                self.my_process_signal.send_message_signal.emit(line)
+                print(line)
+                # self.my_process_signal.send_message_signal.emit(line)
         if self.process.returncode == 0:
             print("success")
         else:
@@ -126,7 +127,7 @@ class YoloModel(Model):
             self.process.kill()
         return
 
-    def __copy_base_model(self, pretrained_model_file_name):
+    def __copy_base_model(self):
         src_pth = os.path.join(self.pretrained_model_dir, "yolo11n.pt")
         dst_pth = os.path.join("./", "yolo11n.pt")
         shutil.copy2(src_pth, dst_pth)
@@ -139,7 +140,7 @@ class YoloModel(Model):
 
     def train(self, train_cfg_pth):
         # 每次训练对应一个config
-        self.__copy_base_model("yolo11n.pt")
+        self.__copy_base_model()
         # 复制一个 基础模型文件在工作目录下
         command = f"{self.tool_pth} cfg={train_cfg_pth}"
         self.__run_cmd(command)
@@ -150,7 +151,7 @@ class YoloModel(Model):
                  model_pth: str,
                  ):
 
-        assert os.path.isfile(dataset_config_pth), "Error, Dataset config yaml Not Found!"
+        assert (os.path.isfile(dataset_config_pth) or os.path.isdir(dataset_config_pth)), "Error, Dataset config yaml Not Found!"
         if self.curr_proj_dir is None:
             self.curr_proj_dir = os.path.split(model_pth)[0]
 
@@ -200,34 +201,73 @@ class PaddleModel:
         return
 
 
-if __name__ == "__main__":
-    # TODO: 测试模型训练  导出  推理
+def run_ultra_clas_process():
+    model = YoloModel(r"D:\envs\ultr_py11\Scripts\yolo.exe",
+                      r"E:\Pretrained_models\YOLOv11-cls",
+                      r"D:\share_dir\DLTrainer\default_configs\ultral_config_template.yaml",
+                      r".\DLTmp",
+                      )
+
+    config_pth = model.make_train_cfg("classify",
+                                      r"D:\share_dir\DLTrainer\DataSetPy\DLTmp\dataset_20250106101803",
+                                      "yolo11n-cls.pt"
+                                      )
+    model.train(config_pth)
+
+    # model.evaluate(r"D:\share_dir\DLTrainer\DataSetPy\DLTmp\dataset_20250106101803",
+    #                r"D:\share_dir\DLTrainer\ModelPy\DLTmp\Proj_20250106124431\train\weights\best.pt",
+    #                )
+
+    # model.inference(r"D:\share_dir\DLTrainer\ModelPy\DLTmp\Proj_20250106124431\train\weights\best.pt",
+    #                 r"D:\share_dir\DLTrainer\ModelPy\DLTmp\Proj_20250106124431\train\weights\2024-01-04_test.jpg"
+    #                 )
+
+    # model.export(r"D:\share_dir\DLTrainer\ModelPy\DLTmp\Proj_20250106124431\train\weights\best.pt", )
+
+    # model.show_training_curve()
+
+    # model.check_env()
+
+    return
+
+def run_ultra_det_process():
     model = YoloModel(r"D:\envs\ultr_py11\Scripts\yolo.exe",
                       r"E:\Pretrained_models\YOLOv11",
                       r"D:\share_dir\DLTrainer\default_configs\ultral_config_template.yaml",
                       r"../DLTmp",
                       )
 
-    model.check_env()
+    # config_pth = model.make_train_cfg("detect",
+    #                                   r"D:\share_dir\DLTrainer\WorkDir\dataset_20241230171728\dataset_20241230171730.yaml",
+    #                                   "yolo11n.pt"
+    #                                   )
 
-    model.train("detect",
-                r"D:\DLTmp\dataset\dataset_20241220184519.yaml",
-                "yolo11n.pt",
-                100,
-                16,
-                640,
-                0.01,
-                "cuda"
-                )
+    model.evaluate(r"D:\share_dir\DLTrainer\WorkDir\dataset_20241230171728\dataset_20241230171730.yaml",
+                   r"D:\share_dir\DLTrainer\WorkDir\Proj_20241230171627\train\weights\best.pt",
+                   )
 
-    # model.evaluate(r"E:\DataSets\dents_det\org_D1\gold_scf\dent_pos.yaml",
-    #                r"D:\share_dir\DLTrainer\DLTrainer3\DLTrainer\DLTmp\20241219143954\train\weights\best.pt",
-    #                )
-    #
-    # model.inference(r"D:\share_dir\DLTrainer\DLTrainer3\DLTrainer\DLTmp\20241219143954\train\weights\best.pt",
-    #                 r"E:\DataSets\dents_det\org_D1\gold_scf\cutPatches640\NG\4_5398.jpg"
-    #                 )
-    #
-    # model.export(r"D:\share_dir\DLTrainer\DLTrainer3\DLTrainer\DLTmp\20241219143954\train\weights\best.pt", )
+    model.inference(r"D:\share_dir\DLTrainer\WorkDir\Proj_20241230171627\train\weights\best.pt",
+                    r"D:\share_dir\DLTrainer\WorkDir\dataset_20241230171728\images\train\5_5428.jpg"
+                    )
+
+    model.export(r"D:\share_dir\DLTrainer\WorkDir\Proj_20241230171627\train\weights\best.pt", )
 
     # model.show_training_curve()
+
+    # model.check_env()
+    return
+
+
+
+if __name__ == "__main__":
+    # TODO: 测试模型训练  导出  推理
+
+    run_ultra_clas_process()
+
+    # run_ultra_det_process()
+
+
+
+
+
+
