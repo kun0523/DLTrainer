@@ -578,7 +578,7 @@ class Ui_MainWindow(object):
         self.label_5.setText(QCoreApplication.translate("MainWindow", u"\u9884\u8bad\u7ec3\u6a21\u578b\u6587\u4ef6\uff1a", None))
         self.label_17.setText(QCoreApplication.translate("MainWindow", u"\u56fe\u50cf\u5c3a\u5bf8\uff1a", None))
         self.lb_dataset.setText(QCoreApplication.translate("MainWindow", u"\u6570\u636e\u96c6\u914d\u7f6e\u6587\u4ef6\uff1a", None))
-        self.le_imgsz.setText("")
+        self.le_imgsz.setText(QCoreApplication.translate("MainWindow", u"224", None))
         self.le_imgsz.setPlaceholderText(QCoreApplication.translate("MainWindow", u"\u9ed8\u8ba4:224 \u53ef\u6839\u636e\u9879\u76ee\u8c03\u6574\uff0c\u8981\u6c42\u76ee\u6807\u6e05\u6670\u53ef\u89c1", None))
         self.cb_pretrained_model_file.setPlaceholderText("")
         self.label_18.setText(QCoreApplication.translate("MainWindow", u"\u6279\u91cf\u4e2a\u6570\uff1a", None))

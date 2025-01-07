@@ -788,7 +788,7 @@
                    <item row="2" column="3">
                     <widget class="QLineEdit" name="le_imgsz">
                      <property name="text">
-                      <string/>
+                      <string>224</string>
                      </property>
                      <property name="placeholderText">
                       <string>默认:224 可根据项目调整，要求目标清晰可见</string>

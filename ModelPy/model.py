@@ -1,12 +1,11 @@
 # This Python file uses the following encoding: utf-8
 # 模型训练  模型推理
 import os
-import re
 import shutil
 import yaml
 from abc import ABC, abstractmethod
 import subprocess
-from datetime import datetime
+from subprocess import STARTUPINFO, STARTF_USESHOWWINDOW
 
 from PySide6.QtCore import Signal, QObject
 
@@ -107,11 +106,17 @@ class YoloModel(Model):
         return tmp_config_pth
 
     def __run_cmd(self, command_):
-        self.process = subprocess.Popen(command_, shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        startup_info = STARTUPINFO()
+        startup_info.dwFlags |= STARTF_USESHOWWINDOW
+        startup_info.wShowWindow = 0
+        self.process = subprocess.Popen(command_, shell=False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, startupinfo=startup_info)
         while self.process.poll() is None:
             line = self.process.stdout.readline()
             if type(line) == bytes:
-                line = line.decode()
+                try:
+                    line = line.decode(encoding="utf-8", errors="ignore")
+                except Exception as e:
+                    print(e)
             line = line.strip()
             if line:
                 # print(line)

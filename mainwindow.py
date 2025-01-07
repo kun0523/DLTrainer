@@ -249,11 +249,11 @@ class MainWindow(QMainWindow):
                 used_pretrained_model_pth), f"Error, pretrained model file:[{used_pretrained_model_pth}] Not Found"
 
             model = YoloModel(tool_path, pretrained_model_dir, temp_cfg_path, self.workdir)
-            if TASK_TYPE == 1:
+            if TASK_TYPE == 0:
                 task_mode = "classify"
-            elif TASK_TYPE == 2:
+            elif TASK_TYPE == 1:
                 task_mode = "detect"
-            elif TASK_TYPE == 3:
+            elif TASK_TYPE == 2:
                 task_mode = "segment"
             else:
                 task_mode = ""

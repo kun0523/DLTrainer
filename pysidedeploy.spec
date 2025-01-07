@@ -1,7 +1,7 @@
 [app]
 
 # title of your application
-title = pyside_app_demo
+title = DLTrainer
 
 # project directory. the general assumption is that project_dir is the parent directory
 # of input_file
@@ -18,6 +18,7 @@ project_file = DLTrainer.pyproject
 
 # application icon
 icon = D:\envs\pyside6_env\Lib\site-packages\PySide6\scripts\deploy_lib\pyside_icon.ico
+# icon = .\icon.ico
 
 [python]
 
@@ -40,7 +41,7 @@ qml_files =
 excluded_qml_plugins = 
 
 # qt modules used. comma separated
-modules = Gui,Widgets,Core
+modules = Core,Gui,Widgets
 
 # qt plugins used by the application
 plugins = platforms/darwin,styles,xcbglintegrations,platformthemes,iconengines,platforms,imageformats,generic,platforminputcontexts,accessiblebridge,egldeviceintegrations
@@ -60,14 +61,14 @@ plugins =
 
 # usage description for permissions requested by the app as found in the info.plist file
 # of the app bundle
-# eg = extra_args = --show-modules --follow-stdlib --windows-console-mode=disable
+# eg = extra_args = --show-modules --follow-stdlib
 macos.permissions = 
 
 # mode of using nuitka. accepts standalone or onefile. default is onefile.
 mode = onefile
 
 # (str) specify any extra nuitka arguments
-extra_args = --quiet --noinclude-qt-translations
+extra_args = --quiet --noinclude-qt-translations --windows-console-mode=disable
 
 [buildozer]
 

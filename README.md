@@ -11,10 +11,21 @@
 - classes_names: `dent,`
 
 ## 模型训练
-- yolo: `D:\envs\ultr_py11\Scripts\yolo.exe`
+
+### 分类任务
+- yolo: `D:\envs\ultral_py11_gpu\Scripts\yolo.exe`
+- 预训练模型文件夹：`E:\Pretrained_models\YOLOv11-cls`
+- 配置模板文件: `D:\share_dir\DLTrainer\default_configs\ultral_config_template.yaml`
+- 数据集配置文件：`E:\DataSets\vacuum_package\tmp_dataset`
+
+### 目标检测任务
+- yolo: `D:\envs\ultral_py11_gpu\Scripts\yolo.exe`
 - 预训练模型文件夹：`E:\Pretrained_models\YOLOv11`
 - 配置模板文件: `D:\share_dir\DLTrainer\default_configs\ultral_config_template.yaml`
 - 数据集配置文件：`E:\DLTmp\dataset_20241227151050\dataset_20241227151050.yaml`
+
+
+### 分割任务
 
 - 测试模型文件：`D:\share_dir\impression_detect\workdir\yolov11\det_dent_gold_scf\yolo11n_sgd\weights\last.pt`
 - 测试图片文件：`E:\DataSets\dents_det\org_D1\gold_scf\cutPatches640\NG\4_5398.jpg`
@@ -31,6 +42,9 @@
   - 可以修改的项目：
     - 修改app名称
     - 关闭console窗口
+
+- `pyinstaller -F mainwindow.py -i icon.ico -n DLTrainer`
+- `pyinstaller xxx.spec`
 
 ## TODO:
 1. 在原图上标注后，根据标注信息，统计目标占原图的比例
